@@ -57,7 +57,7 @@ class App extends React.Component<RouteComponentProps, IAppState> {
                 className="form-control"
                 autoComplete="off"
                 placeholder="Search packages..."
-              onChange={this.handleChange} />
+                onChange={this.handleChange} />
             </form>
           </div>
         </div>
@@ -75,8 +75,7 @@ class App extends React.Component<RouteComponentProps, IAppState> {
         </section>
       );
     }
-    else
-    {
+    else {
       return (
         <section role="main" className="container main-container">
           <SearchResults input={this.state.input} />

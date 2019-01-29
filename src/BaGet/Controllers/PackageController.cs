@@ -46,8 +46,13 @@ namespace BaGet.Controllers
             return Json(new PackageVersions(versions));
         }
 
-        public async Task<IActionResult> DownloadPackage(string id, string version, CancellationToken cancellationToken)
+        public async Task<IActionResult> DownloadPackage(string id, string version, [FromServices] IMiddlewareAuthenticationService middlewareAuthenticationService, CancellationToken cancellationToken)
         {
+            if (!await middlewareAuthenticationService.AuthenticateAsync(this.HttpContext))
+            {
+                return this.Unauthorized(); 
+            }
+
             if (!NuGetVersion.TryParse(version, out var nugetVersion))
             {
                 return NotFound();

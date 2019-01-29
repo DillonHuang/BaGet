@@ -1,7 +1,10 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using BaGet.Core.Configuration;
 using BaGet.Extensions;
 using BaGet.Protocol;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using NuGet.Versioning;
 
 namespace BaGet.Controllers
@@ -11,9 +14,16 @@ namespace BaGet.Controllers
     /// </summary>
     public class IndexController : Controller
     {
-        private IEnumerable<ServiceIndexResource> BuildResource(string name, string url, params string[] versions) 
+        private readonly BaGetOptions _options;
+
+        public IndexController(IOptions<BaGetOptions> options)
         {
-            foreach (var version in versions) 
+            _options = options.Value;
+        }
+
+        private IEnumerable<ServiceIndexResource> BuildResource(string name, string url, params string[] versions)
+        {
+            foreach (var version in versions)
             {
                 var type = string.IsNullOrEmpty(version) ? name : $"{name}/{version}";
 
@@ -23,8 +33,15 @@ namespace BaGet.Controllers
 
         // GET v3/index
         [HttpGet]
-        public ServiceIndex Get()
+        public async Task<ActionResult<ServiceIndex>> Get([FromServices] IMiddlewareAuthenticationService middlewareAuthenticationService)
         {
+
+            var indexController = this;
+            if (!await middlewareAuthenticationService.AuthenticateAsync(this.HttpContext))
+            {
+                return Unauthorized();
+            }
+
             var resources = new List<ServiceIndexResource>();
 
             resources.AddRange(BuildResource("PackagePublish", Url.PackagePublish(), "2.0.0"));

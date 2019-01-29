@@ -10,6 +10,8 @@ namespace BaGet.Core.Configuration
         /// </summary>
         public string ApiKey { get; set; }
 
+        public string AccessToken { get; set; }
+
         /// <summary>
         /// The application root URL for usage in reverse proxy scenarios.
         /// </summary>

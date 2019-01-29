@@ -1,8 +1,11 @@
-﻿using System;
+using System;
+using System.Linq;
+using System.Net;
 using BaGet.Configurations;
 using BaGet.Core.Configuration;
 using BaGet.Core.Entities;
 using BaGet.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
@@ -24,12 +27,14 @@ namespace BaGet
         public void ConfigureServices(IServiceCollection services)
         {
             services.ConfigureBaGet(Configuration, httpServices: true);
-
+             
             // In production, the UI files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
             {
                 configuration.RootPath = "BaGet.UI/build";
             });
+            services.AddTransient<NugetAuthorizeFilter>();
+            services.AddScoped<IMiddlewareAuthenticationService, MiddlewareAuthenticationService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
